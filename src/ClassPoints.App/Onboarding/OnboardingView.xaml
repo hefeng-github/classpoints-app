@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ClassPoints.App.Onboarding.OnboardingView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ClassPoints.App.Controls">
+
+    <Grid Background="{ThemeResource BoardBgBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <!-- ===== 顶部：进度 ===== -->
+        <Grid Padding="40,26,40,8">
+            <StackPanel Spacing="4">
+                <TextBlock x:Name="KickerText" Text="班级积分 · 首次配置" Style="{StaticResource DeskSecondaryText}" />
+                <TextBlock x:Name="TitleText" Style="{StaticResource H2Text}" />
+            </StackPanel>
+
+            <StackPanel x:Name="StepDots" Orientation="Horizontal" Spacing="8"
+                        HorizontalAlignment="Right" VerticalAlignment="Center" />
+        </Grid>
+
+        <!-- ===== 中间：表单 ===== -->
+        <ScrollViewer x:Name="FormScroll" Grid.Row="1" VerticalScrollBarVisibility="Auto"
+                      Padding="40,6,40,10">
+            <StackPanel x:Name="Body" Spacing="14" MaxWidth="880" HorizontalAlignment="Left" />
+        </ScrollViewer>
+
+        <!-- ===== 第 5 步：自检（要占满宽度，所以是另一个容器） ===== -->
+        <ScrollViewer x:Name="SelfCheckScroll" Grid.Row="1" Visibility="Collapsed"
+                      VerticalScrollBarVisibility="Auto" Padding="40,6,40,10">
+            <StackPanel Spacing="12">
+                <TextBlock x:Name="VerdictText" Style="{StaticResource DeskBodyText}" MaxWidth="1100" />
+                <Border x:Name="SelfCheckHost" Style="{StaticResource CardBorder}" Padding="8" />
+            </StackPanel>
+        </ScrollViewer>
+
+        <!-- ===== 底部：按钮 ===== -->
+        <Grid Grid.Row="2" Padding="40,8,40,22">
+            <StackPanel x:Name="TryPanel" Orientation="Horizontal" Spacing="10" Visibility="Collapsed"
+                        VerticalAlignment="Center">
+                <Button x:Name="TryButton" Content="试加一分" Style="{StaticResource TouchSecondaryButton}"
+                        Click="OnTryAward" />
+                <Button x:Name="UndoButton" Content="撤销这一分" Style="{StaticResource TouchSecondaryButton}"
+                        Click="OnTryUndo" Visibility="Collapsed" />
+                <TextBlock x:Name="TryResultText" Style="{StaticResource SecondaryText}"
+                           VerticalAlignment="Center" MaxWidth="520" TextWrapping="Wrap" />
+            </StackPanel>
+
+            <TextBlock x:Name="HintText" Style="{StaticResource SmallText}" VerticalAlignment="Center" />
+
+            <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right">
+                <Button x:Name="SkipAllButton" Content="跳过全部，用默认设置"
+                        Style="{StaticResource TouchSecondaryButton}" Click="OnSkipAll" />
+                <Button x:Name="BackButton" Content="上一步" Style="{StaticResource TouchSecondaryButton}"
+                        Click="OnBack" />
+                <Button x:Name="NextButton" Content="下一步" Style="{StaticResource TouchPrimaryButton}"
+                        Click="OnNext" />
+            </StackPanel>
+        </Grid>
+
+        <controls:NumberPad x:Name="Pad" Grid.RowSpan="3" />
+        <controls:Toast x:Name="ToastLayer" Grid.RowSpan="3" />
+    </Grid>
+</UserControl>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ClassPoints.App.Controls.StudentCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    IsTabStop="False">
+
+    <!-- 卡片：1px 描边代替投影（4K 核显上投影会把帧率打到 30 以下） -->
+    <Border x:Name="Root"
+            Background="{ThemeResource CardBgBrush}"
+            BorderBrush="{ThemeResource CardStrokeBrush}"
+            BorderThickness="1"
+            CornerRadius="12"
+            Padding="12,8">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <TextBlock x:Name="NameText"
+                       Grid.Row="0"
+                       Text="姓名"
+                       FontFamily="{StaticResource TextFont}"
+                       FontSize="20"
+                       FontWeight="SemiBold"
+                       Foreground="{ThemeResource TextPrimaryBrush}"
+                       TextTrimming="CharacterEllipsis"
+                       MaxLines="1" />
+
+            <TextBlock x:Name="ScoreText"
+                       Grid.Row="1"
+                       Text="0"
+                       FontFamily="{StaticResource NumberFont}"
+                       FontSize="36"
+                       FontWeight="SemiBold"
+                       Foreground="{ThemeResource TextPrimaryBrush}"
+                       HorizontalAlignment="Left"
+                       VerticalAlignment="Center"
+                       TextLineBounds="Tight" />
+
+            <TextBlock x:Name="TodayText"
+                       Grid.Row="2"
+                       Text=""
+                       FontFamily="{StaticResource TextFont}"
+                       FontSize="14"
+                       Foreground="{ThemeResource TextSecondaryBrush}"
+                       TextTrimming="CharacterEllipsis"
+                       MaxLines="1" />
+
+            <!-- 选中勾：右上角，不占布局 -->
+            <Border x:Name="CheckBadge"
+                    Grid.Row="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top"
+                    Width="26" Height="26"
+                    CornerRadius="13"
+                    Background="{ThemeResource SelectStrokeBrush}"
+                    Visibility="Collapsed">
+                <TextBlock Text="✓"
+                           FontSize="16"
+                           FontWeight="Bold"
+                           Foreground="{ThemeResource OnAccentBrush}"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center" />
+            </Border>
+        </Grid>
+    </Border>
+</UserControl>

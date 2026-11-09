@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ClassPoints.App.Viewer.ViewerRankPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid Padding="16,12,16,16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <StackPanel Spacing="2">
+                <TextBlock Text="排名" Style="{StaticResource DeskH1Text}" FontSize="24" />
+                <TextBlock x:Name="SubText" Style="{StaticResource DeskSecondaryText}" />
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right"
+                        VerticalAlignment="Center">
+                <TextBox x:Name="SearchBox" PlaceholderText="搜索姓名" Height="34" Width="180"
+                         TextChanged="OnSearchChanged" />
+                <Button x:Name="PeriodButton" Content="本周期" Click="OnSortPeriod"
+                        Style="{StaticResource DeskPrimaryButton}" />
+                <Button x:Name="TermButton" Content="学期累计" Click="OnSortTerm"
+                        Style="{StaticResource DeskButton}" />
+            </StackPanel>
+        </Grid>
+
+        <Border Grid.Row="1" Background="{ThemeResource CardBgBrush}" CornerRadius="8,8,0,0"
+                Padding="14,10" Margin="0,14,0,0">
+            <Grid ColumnSpacing="12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="56" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="80" />
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition Width="110" />
+                    <ColumnDefinition Width="100" />
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="名次" Style="{StaticResource DeskColumnHeader}" />
+                <TextBlock Grid.Column="1" Text="姓名" Style="{StaticResource DeskColumnHeader}" />
+                <TextBlock Grid.Column="2" Text="座位" Style="{StaticResource DeskColumnHeader}" />
+                <TextBlock Grid.Column="3" Text="本周期" Style="{StaticResource DeskColumnHeader}"
+                           HorizontalAlignment="Right" />
+                <TextBlock Grid.Column="4" Text="学期累计" Style="{StaticResource DeskColumnHeader}"
+                           HorizontalAlignment="Right" />
+                <TextBlock Grid.Column="5" Text="事件次数" Style="{StaticResource DeskColumnHeader}"
+                           HorizontalAlignment="Right" />
+            </Grid>
+        </Border>
+
+        <Border Grid.Row="2" Style="{StaticResource DeskCardBorder}" CornerRadius="0,0,8,8" Padding="0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel x:Name="RowList" />
+            </ScrollViewer>
+        </Border>
+    </Grid>
+</Page>

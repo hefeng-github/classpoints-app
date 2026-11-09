@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  大屏端的尺寸基准来自方案 9.10 的实测表：
+  正文 20、页面标题 40、类型按钮高 72、次要按钮高 56、卡片圆角 12、内容边距 12。
+  两个反直觉点：边距要缩小（48 人要挤进一屏），按钮放大倍数要比文字大（手指落点精度 ≠ 可读距离）。
+-->
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ================= 文字 ================= -->
+    <Style x:Key="H1Text" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="40" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="TextLineBounds" Value="Tight" />
+    </Style>
+
+    <Style x:Key="H2Text" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="BodyText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="SecondaryText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{ThemeResource TextSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="SmallText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{ThemeResource TextSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="NumberText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource NumberFont}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="TextLineBounds" Value="Tight" />
+    </Style>
+
+    <!-- ================= 卡片 ================= -->
+    <Style x:Key="CardBorder" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource CardBgBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+    </Style>
+
+    <!-- ================= 按钮 ================= -->
+    <!-- 类型按钮：72 高、最小宽 160。手指按下去不会有"是不是点到隔壁"的犹豫。 -->
+    <Style x:Key="TouchPrimaryButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Height" Value="72" />
+        <Setter Property="MinWidth" Value="160" />
+        <Setter Property="Padding" Value="24,0" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{ThemeResource PositiveBgBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource PositiveBrush}" />
+    </Style>
+
+    <Style x:Key="TouchSecondaryButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Height" Value="56" />
+        <Setter Property="MinWidth" Value="96" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{ThemeResource CardBgBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+    </Style>
+
+    <!-- 键帽：数字键盘 96×96 -->
+    <Style x:Key="TouchKeyButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource NumberFont}" />
+        <Setter Property="FontSize" Value="30" />
+        <Setter Property="Width" Value="96" />
+        <Setter Property="Height" Value="72" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{ThemeResource CardBgBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+    </Style>
+
+    <!-- ================= 页签（大屏自绘，56 高胶囊） ================= -->
+    <Style x:Key="BoardTabButton" TargetType="ToggleButton">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Padding" Value="18,0" />
+        <Setter Property="CornerRadius" Value="22" />
+    </Style>
+
+    <!-- ================= 大屏左侧图标条 ================= -->
+    <Style x:Key="RailButtonStyle" TargetType="Button">
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="52" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{ThemeResource TextSecondaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="PaneItemStyle" TargetType="Button">
+        <Setter Property="Height" Value="56" />
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="19" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+        <Setter Property="Padding" Value="18,0" />
+    </Style>
+
+    <!-- ================= 只读查询端页签：60 高，像查询机的物理按键 ================= -->
+    <Style x:Key="ViewerTabButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="18" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="MinWidth" Value="132" />
+        <Setter Property="Padding" Value="26,0" />
+        <Setter Property="CornerRadius" Value="22" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="Background" Value="{ThemeResource CardBgBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextSecondaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- ================= 列表行 ================= -->
+    <Style x:Key="ListRowBorder" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource CardBgBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="12,10" />
+    </Style>
+
+    <!-- =====================================================================
+         电脑端：键鼠 + 信息密集，字号比大屏整体降一档（9.10 的同一张表，
+         大屏 20/16/14 是"两米外看清"，电脑端 15/13 是"半米内看得多"）。
+         同一套界面缩放两倍是错的，所以这里是一组独立的样式，不是复用的。
+         ===================================================================== -->
+
+    <Style x:Key="DeskH1Text" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="26" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="TextLineBounds" Value="Tight" />
+    </Style>
+
+    <Style x:Key="DeskH2Text" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+    </Style>
+
+    <Style x:Key="DeskBodyText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="DeskSecondaryText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{ThemeResource TextSecondaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="DeskNumberText" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource NumberFont}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="TextLineBounds" Value="Tight" />
+    </Style>
+
+    <!-- 表头：全大写太洋气，这里只用小一号的次要色 + 加粗 -->
+    <Style x:Key="DeskColumnHeader" TargetType="TextBlock">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{ThemeResource TextSecondaryBrush}" />
+    </Style>
+
+    <Style x:Key="DeskCardBorder" TargetType="Border">
+        <Setter Property="Background" Value="{ThemeResource CardBgBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="18" />
+    </Style>
+
+    <Style x:Key="DeskNavButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{ThemeResource TextSecondaryBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
+    </Style>
+
+    <Style x:Key="DeskButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="MinWidth" Value="76" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="Background" Value="{ThemeResource CardBgBrush}" />
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource TextPrimaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="DeskPrimaryButton" TargetType="Button">
+        <Setter Property="FontFamily" Value="{StaticResource TextFont}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Height" Value="34" />
+        <Setter Property="MinWidth" Value="88" />
+        <Setter Property="Padding" Value="16,0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Background" Value="{ThemeResource SelectStrokeBrush}" />
+        <Setter Property="Foreground" Value="{ThemeResource OnAccentBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
+    <!-- 表格行：电脑端行高 40，靠得住的密度 -->
+    <Style x:Key="DeskRowBorder" TargetType="Border">
+        <Setter Property="BorderBrush" Value="{ThemeResource CardStrokeBrush}" />
+        <Setter Property="BorderThickness" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="MinHeight" Value="40" />
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,41 @@
+# 编译产物
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# 发布产物（用 scripts/publish.ps1 现场生成，不进仓库）
+dist/
+
+# 验收自截图（CP_SNAP 生成，跑一次就有一份，不适合进版本库）
+shots/
+
+# 演示库与临时库
+demo/*.db
+demo/*.db-shm
+demo/*.db-wal
+*.db
+*.db-shm
+*.db-wal
+*.cpcfg
+
+# Worker：依赖与本地 D1 状态
+worker/node_modules/
+worker/.wrangler/
+worker/.wrangler/state.old-*/
+
+# 系统垃圾
+.DS_Store
+Thumbs.db
+*.log
+was.json
+
+# 部署密钥本地留档（wrangler secret put 上传的那份），只在本机
+worker/.secret.local
+
+# 清缓存时挪出来的旧 obj/bin（MSBuild 会把工程目录里的 obj* 当源码扫，所以挪到仓库根）
+_stale/
+
+# 开发过程记录（会话记忆），属于本机工作数据，不进交付仓库
+.workbuddy/

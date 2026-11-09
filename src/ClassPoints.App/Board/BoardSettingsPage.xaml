@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ClassPoints.App.Board.BoardSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Background="{ThemeResource BoardBgBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Padding="12,0">
+            <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                <TextBlock Text="设置" Style="{StaticResource H2Text}" />
+                <TextBlock x:Name="WhoText" Style="{StaticResource SecondaryText}" VerticalAlignment="Center" />
+            </StackPanel>
+            <Button Content="管理模式" HorizontalAlignment="Right" VerticalAlignment="Center"
+                    Style="{StaticResource TouchSecondaryButton}" Height="40" MinWidth="120"
+                    Click="OnAdminClick" />
+        </Grid>
+
+        <ScrollViewer Grid.Row="1" Padding="12,0,12,16" ZoomMode="Disabled" VerticalScrollBarVisibility="Auto">
+            <StackPanel x:Name="Sections" Spacing="12" MaxWidth="1400" HorizontalAlignment="Stretch" />
+        </ScrollViewer>
+    </Grid>
+</Page>

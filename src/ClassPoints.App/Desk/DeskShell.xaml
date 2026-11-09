@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ClassPoints.App.Desk.DeskShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ClassPoints.App.Controls">
+
+    <!--
+        电脑端的样子：左侧常驻文字导航、分组小标题、行高 40 —— 键鼠密度，一眼能扫完七八项。
+        大屏端相反：左侧只有 48 宽的图标轨、内容区顶上有常驻状态条、卡片圆角更大。
+        两端刻意不做成"同一套界面缩放两倍"，理由见 Styles.xaml 顶部。
+    -->
+    <Grid Background="{ThemeResource BoardBgBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="236" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{ThemeResource CardBgBrush}"
+                BorderBrush="{ThemeResource CardStrokeBrush}" BorderThickness="0,0,1,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Margin="20,20,20,16" Spacing="3">
+                    <TextBlock x:Name="ClassNameText" Style="{StaticResource DeskH2Text}"
+                               FontSize="18" TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                    <TextBlock x:Name="PeriodText" Style="{StaticResource DeskSecondaryText}"
+                               TextWrapping="NoWrap" TextTrimming="CharacterEllipsis" />
+                    <Border x:Name="ModeChip" Background="{ThemeResource TileBgBrush}" CornerRadius="4"
+                            Padding="6,2" HorizontalAlignment="Left" Margin="0,6,0,0">
+                        <TextBlock x:Name="ModeText" Style="{StaticResource DeskSecondaryText}" FontSize="11" />
+                    </Border>
+                </StackPanel>
+
+                <StackPanel Grid.Row="1" Margin="12,0" Spacing="2">
+                    <TextBlock Text="记录" Style="{StaticResource DeskColumnHeader}" Margin="10,8,0,4" />
+
+                    <Button x:Name="NavHome" Tag="0" Click="OnNavClick" Style="{StaticResource DeskNavButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE80F;" FontSize="15" />
+                            <TextBlock Text="总览" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavStudents" Tag="1" Click="OnNavClick" Style="{StaticResource DeskNavButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE716;" FontSize="15" />
+                            <TextBlock Text="名单" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavCounters" Tag="2" Click="OnNavClick" Style="{StaticResource DeskNavButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE7C1;" FontSize="15" />
+                            <TextBlock Text="事件计数" />
+                        </StackPanel>
+                    </Button>
+
+                    <TextBlock Text="成绩" Style="{StaticResource DeskColumnHeader}" Margin="10,14,0,4" />
+
+                    <Button x:Name="NavExams" Tag="3" Click="OnNavClick" Style="{StaticResource DeskNavButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE9D9;" FontSize="15" />
+                            <TextBlock Text="考试与总评" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavPrint" Tag="4" Click="OnNavClick" Style="{StaticResource DeskNavButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE749;" FontSize="15" />
+                            <TextBlock Text="打印与导出" />
+                        </StackPanel>
+                    </Button>
+                    <Button x:Name="NavPeriods" Tag="5" Click="OnNavClick" Style="{StaticResource DeskNavButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE81C;" FontSize="15" />
+                            <TextBlock Text="周期" />
+                        </StackPanel>
+                    </Button>
+
+                    <TextBlock Text="系统" Style="{StaticResource DeskColumnHeader}" Margin="10,14,0,4" />
+
+                    <Button x:Name="NavSettings" Tag="6" Click="OnNavClick" Style="{StaticResource DeskNavButton}">
+                        <StackPanel Orientation="Horizontal" Spacing="12">
+                            <FontIcon Glyph="&#xE713;" FontSize="15" />
+                            <TextBlock Text="设置" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <StackPanel Grid.Row="2" Margin="20,0,20,16" Spacing="4">
+                    <TextBlock x:Name="BackupText" Style="{StaticResource DeskSecondaryText}" />
+                    <TextBlock x:Name="VersionText" Style="{StaticResource DeskSecondaryText}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <Frame x:Name="DeskFrame" Grid.Column="1" />
+
+        <controls:Toast x:Name="ToastLayer" Grid.ColumnSpan="2" />
+    </Grid>
+</UserControl>

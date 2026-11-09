@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ClassPoints.App.Board.BoardShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ClassPoints.App.Controls">
+
+    <!--
+        大屏端的样子：左侧 56 宽的图标轨（只有图标，没有字），内容区顶上是常驻状态条。
+        56 不是随手定的：48 会让点击落点偏小，64 又要从卡片宽度里再挤出一列。
+        状态条是大屏专属 —— 教室里没人看得见显示器边框外的东西，
+        「今天几号、现在几点、这台在不在同步」必须一直挂在屏幕上。
+    -->
+    <Grid Background="{ThemeResource BoardBgBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="56" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== 左侧图标轨 ===== -->
+        <Border Grid.Column="0" Background="{ThemeResource CardBgBrush}"
+                BorderBrush="{ThemeResource CardStrokeBrush}" BorderThickness="0,0,1,0">
+            <Grid>
+                <StackPanel VerticalAlignment="Top" Spacing="4" Margin="0,10,0,0">
+                    <Border Width="36" Height="36" CornerRadius="10" Margin="0,0,0,8"
+                            HorizontalAlignment="Center"
+                            Background="{ThemeResource SelectStrokeBrush}">
+                        <FontIcon Glyph="&#xE8F1;" FontSize="17"
+                                  Foreground="{ThemeResource OnAccentBrush}" />
+                    </Border>
+
+                    <Button x:Name="NavScore" Tag="0" Click="OnRailClick" Style="{StaticResource RailButtonStyle}"
+                            ToolTipService.ToolTip="记分台">
+                        <FontIcon Glyph="&#xE710;" FontSize="22" />
+                    </Button>
+                    <Button x:Name="NavCounters" Tag="4" Click="OnRailClick" Style="{StaticResource RailButtonStyle}"
+                            ToolTipService.ToolTip="事件计数">
+                        <FontIcon Glyph="&#xE7C1;" FontSize="22" />
+                    </Button>
+                    <Button x:Name="NavWall" Tag="1" Click="OnRailClick" Style="{StaticResource RailButtonStyle}"
+                            ToolTipService.ToolTip="看板">
+                        <FontIcon Glyph="&#xE80F;" FontSize="22" />
+                    </Button>
+                    <Button x:Name="NavLookup" Tag="2" Click="OnRailClick" Style="{StaticResource RailButtonStyle}"
+                            ToolTipService.ToolTip="查分">
+                        <FontIcon Glyph="&#xE721;" FontSize="22" />
+                    </Button>
+                    <Button x:Name="NavEntries" Tag="3" Click="OnRailClick" Style="{StaticResource RailButtonStyle}"
+                            ToolTipService.ToolTip="明细">
+                        <FontIcon Glyph="&#xE8A5;" FontSize="22" />
+                    </Button>
+                    <Button x:Name="NavSettings" Tag="5" Click="OnRailClick" Style="{StaticResource RailButtonStyle}"
+                            ToolTipService.ToolTip="设置">
+                        <FontIcon Glyph="&#xE713;" FontSize="22" />
+                    </Button>
+                </StackPanel>
+
+                <Button x:Name="PaneToggle" VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                        Width="48" Height="48" Margin="0,0,0,8"
+                        Background="Transparent" BorderThickness="0"
+                        Click="OnPaneToggleClick" ToolTipService.ToolTip="展开导航">
+                    <FontIcon Glyph="&#xE700;" FontSize="18" Foreground="{ThemeResource TextSecondaryBrush}" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ===== 内容区（顶上是常驻状态条） ===== -->
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="52" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Border Grid.Row="0" Background="{ThemeResource CardBgBrush}"
+                    BorderBrush="{ThemeResource CardStrokeBrush}" BorderThickness="0,0,0,1">
+                <Grid Padding="16,0">
+                    <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock x:Name="HeadClassText" Style="{StaticResource BodyText}"
+                                   FontSize="18" FontWeight="SemiBold" TextTrimming="CharacterEllipsis" />
+                        <Border Background="{ThemeResource AccentBgBrush}" CornerRadius="10" Padding="10,2"
+                                VerticalAlignment="Center">
+                            <TextBlock x:Name="HeadModeText" Text="大屏" FontSize="13"
+                                       Foreground="{ThemeResource SelectStrokeBrush}" />
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Spacing="14" HorizontalAlignment="Right"
+                                VerticalAlignment="Center">
+                        <TextBlock x:Name="HeadSyncText" Style="{StaticResource SmallText}" VerticalAlignment="Center" />
+                        <TextBlock x:Name="HeadDateText" Style="{StaticResource SmallText}" VerticalAlignment="Center" />
+                        <TextBlock x:Name="HeadClockText" FontFamily="{StaticResource NumberFont}" FontSize="20"
+                                   FontWeight="SemiBold" Foreground="{ThemeResource TextPrimaryBrush}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Grid Grid.Row="1">
+                <Frame x:Name="ContentFrame" />
+
+                <!-- 展开的导航：压在内容上，不推挤网格（推挤会让 48 张卡在展开瞬间重排） -->
+                <Grid x:Name="PaneLayer" Visibility="Collapsed">
+                    <Rectangle Fill="{ThemeResource ScrimBrush}" Tapped="OnPaneScrimTapped" />
+                    <Border Width="240" HorizontalAlignment="Left"
+                            Background="{ThemeResource CardBgBrush}"
+                            BorderBrush="{ThemeResource CardStrokeBrush}"
+                            BorderThickness="0,0,1,0">
+                        <StackPanel Margin="8,12" Spacing="4">
+                            <TextBlock x:Name="PaneClassText" Style="{StaticResource SecondaryText}"
+                                       Margin="12,0,0,12" TextTrimming="CharacterEllipsis" />
+                            <Button Tag="0" Click="OnPaneItemClick" Style="{StaticResource PaneItemStyle}" Content="记分台" />
+                            <Button Tag="4" Click="OnPaneItemClick" Style="{StaticResource PaneItemStyle}" Content="事件计数" />
+                            <Button Tag="1" Click="OnPaneItemClick" Style="{StaticResource PaneItemStyle}" Content="看板" />
+                            <Button Tag="2" Click="OnPaneItemClick" Style="{StaticResource PaneItemStyle}" Content="查分" />
+                            <Button Tag="3" Click="OnPaneItemClick" Style="{StaticResource PaneItemStyle}" Content="明细" />
+                            <Button Tag="5" Click="OnPaneItemClick" Style="{StaticResource PaneItemStyle}" Content="设置" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+            </Grid>
+        </Grid>
+
+        <!-- ===== 认人覆盖层 ===== -->
+        <Grid x:Name="IdentifyLayer" Grid.ColumnSpan="2" Visibility="Collapsed"
+              Background="{ThemeResource ScrimBrush}">
+            <Border HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="560" Padding="36"
+                    Background="{ThemeResource CardBgBrush}"
+                    BorderBrush="{ThemeResource CardStrokeBrush}"
+                    BorderThickness="1" CornerRadius="20">
+                <StackPanel Spacing="18">
+                    <TextBlock x:Name="IdentifyTitle" Text="请刷卡" Style="{StaticResource H1Text}"
+                               HorizontalAlignment="Center" />
+                    <TextBlock x:Name="IdentifySub"
+                               Text="刷卡，或输入管理密码。"
+                               Style="{StaticResource SecondaryText}"
+                               TextAlignment="Center" TextWrapping="Wrap" />
+                    <ProgressRing IsActive="True" Width="44" Height="44"
+                                  Foreground="{ThemeResource SelectStrokeBrush}"
+                                  HorizontalAlignment="Center" />
+                    <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center">
+                        <Button Content="用密码" Style="{StaticResource TouchSecondaryButton}"
+                                MinWidth="150" Click="OnIdentifyPinClick" />
+                        <Button Content="取消" Style="{StaticResource TouchSecondaryButton}"
+                                MinWidth="110" Click="OnIdentifyCancelClick" />
+                    </StackPanel>
+                    <TextBlock x:Name="IdentifyHint" Style="{StaticResource SmallText}"
+                               TextAlignment="Center" TextWrapping="Wrap"
+                               Text="没卡？到电脑端「设置 → 班委管理」登记。" />
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <controls:PinPad x:Name="Pin" Grid.ColumnSpan="2" />
+        <controls:Toast x:Name="ToastLayer" Grid.ColumnSpan="2" />
+    </Grid>
+</UserControl>

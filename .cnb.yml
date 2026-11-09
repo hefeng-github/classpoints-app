@@ -1,0 +1,82 @@
+# 班级积分系统 · 云原生构建（CNB）
+#
+# 和 .github/workflows/build.yml 分工明确：
+#   GitHub Actions 在 windows-latest 上编 WinUI 3 客户端、跑单测、出发布包；
+#   CNB 在 Linux 容器里跑同步中枢的全流程 + 顺手验证领域层是跨平台干净的。
+#
+# 两条线都跑同一个 worker/test/smoke.mjs，不是"各测一套"，
+# 而是"同一套验收标准在两个平台上都得过"。
+#
+# 为什么 CNB 不编客户端：WinUI 3 只能在 Windows 上编，容器里没有
+# WindowsAppSDK 的 target。硬凑没意义，把该平台能验的验到位就够。
+
+main:
+  push:
+    # ---------- 同步中枢：类型检查 → 迁移 → 接口契约冒烟 ----------
+    - name: worker
+      docker:
+        image: node:22
+      stages:
+        - name: 装依赖
+          script: |
+            cd worker
+            # package-lock.json 里的下载地址统一钉的是官方源（GitHub 的 runner 在美国，
+            # 直连官方最快）。国内构建时把 registry 指到镜像，npm 会自动替换 host，
+            # 两边都能用同一份 lock。反过来把镜像地址写进 lock 就不行——
+            # 镜像一抖（npmmirror 报过 ER_NO_SUCH_TABLE）GitHub 那边整条就红。
+            npm config set registry https://registry.npmmirror.com
+            npm ci
+
+        - name: 类型检查
+          script: |
+            cd worker
+            npm run typecheck
+
+        # 迁移能干净跑完，就等于证明 0001_init.sql 没有语法/约束冲突。
+        # 真实 D1 上用的是同一条命令，只多一个 --remote。
+        - name: 建本地 D1 并应用迁移
+          script: |
+            cd worker
+            export CI=true
+            npx wrangler d1 migrations apply classpoints --local
+
+        - name: 起本地 Worker 并跑 58 项契约冒烟
+          script: |
+            cd worker
+            export CI=true
+
+            # 关键是末尾那个 kill：容器里的流水线会等所有子进程结束，
+            # wrangler dev 是个常驻进程，不显式收掉就会一直挂到阶段超时（600 秒），
+            # 表现成"冒烟早就跑完了，这条却是红的"。
+            npx wrangler dev --port 8787 --ip 127.0.0.1 --local > /tmp/wrangler.log 2>&1 &
+            WDEV=$!
+            trap 'kill -TERM $WDEV 2>/dev/null || true' EXIT
+
+            ready=0
+            for i in $(seq 1 120); do
+              code=$(curl -s -m 2 -o /dev/null -w '%{http_code}' http://127.0.0.1:8787/api/v1/ping || true)
+              if [ "$code" = "401" ]; then ready=1; echo "Worker 已就绪（第 ${i} 秒）"; break; fi
+              if ! kill -0 $WDEV 2>/dev/null; then echo "wrangler 进程提前退出了"; break; fi
+              sleep 1
+            done
+
+            if [ "$ready" != "1" ]; then
+              echo "== Worker 启动失败，日志 =="
+              cat /tmp/wrangler.log
+              exit 1
+            fi
+
+            timeout 240 npm run test:smoke
+            status=$?
+            kill -TERM $WDEV 2>/dev/null || true
+            exit $status
+
+    # ---------- 领域层：证明 Core / Data 不依赖 Windows 才编得过 ----------
+    - name: core
+      docker:
+        image: mcr.microsoft.com/dotnet/sdk:10.0
+      stages:
+        - name: 编译领域层与自检工具
+          script: |
+            dotnet build tools/tests/tests.csproj -c Release
+            echo "Core + Data 在 Linux 上编译通过；客户端本身仍只在 Windows 上编"

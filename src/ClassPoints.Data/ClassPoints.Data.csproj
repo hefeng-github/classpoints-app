@@ -1,0 +1,40 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>ClassPoints.Data</RootNamespace>
+    <AssemblyName>ClassPoints.Data</AssemblyName>
+    <!-- NPOI 2.8 起改用 OSMF（Open Source Maintenance Fee）许可，编译时会要求显式确认。
+         个人 / 非商业使用免费；**如果这要变成公司项目，请先看 https://opensourcemaintenancefee.org 再决定**。
+         不想要这个声明就删掉本行，并把下面 NPOI 降回 2.7.2（代价是会带进 ImageSharp 2.1.9 的已知漏洞）。 -->
+    <AcceptNPOIOSMFLicense>true</AcceptNPOIOSMFLicense>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClassPoints.Core\ClassPoints.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- 这四个原本是 10.0.0 / 8.0.x，NuGet 审计（NU1902/NU1903）报了十几个已知漏洞，
+         编译时表现为 88 条 warning。升到 10.0.14 与 .NET 10 框架自带版本对齐。
+         ClosedXML / DocumentFormat.OpenXml 会把 System.Security.Cryptography.Pkcs、.Xml 钉在 8.0.x，
+         所以下面显式提到 10.0.14 覆盖传递依赖 —— 它们只被 xlsx 读写用到，不涉及我们自己的签名逻辑。 -->
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.14" />
+    <PackageReference Include="NPOI" Version="2.8.1" />
+    <!-- 必须显式引一次 SkiaSharp（NPOI 2.8 起用它做数字/日期格式化）：
+         作为传递依赖时，SkiaSharp 3.119.4 在 net10.0 上只提供编译期 ref 程序集，
+         运行期资产是个空占位 _._，于是 SkiaSharp.dll 不会被拷到输出目录。
+         结果是 DataFormatter 一跑数值格式化就 FileNotFound，被 ExcelReader 的 catch 吞成空串——
+         表现是「Excel 里的分数导入进来全是空白」，而且不报错，极难查。 -->
+    <PackageReference Include="SkiaSharp" Version="3.119.4" />
+    <PackageReference Include="ClosedXML" Version="0.105.1" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.14" />
+    <PackageReference Include="System.Management" Version="10.0.14" />
+    <PackageReference Include="System.Security.Cryptography.Pkcs" Version="10.0.14" />
+    <PackageReference Include="System.Security.Cryptography.Xml" Version="10.0.14" />
+  </ItemGroup>
+
+</Project>

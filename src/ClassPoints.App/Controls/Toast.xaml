@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ClassPoints.App.Controls.Toast"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    IsHitTestVisible="False"
+    Visibility="Collapsed">
+
+    <Border Background="{ThemeResource FloatingBgBrush}"
+            BorderBrush="{ThemeResource CardStrokeBrush}"
+            BorderThickness="1"
+            CornerRadius="24"
+            Padding="22,12"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Top"
+            Margin="0,72,0,0">
+        <TextBlock x:Name="MessageText"
+                   Style="{StaticResource BodyText}"
+                   TextWrapping="Wrap"
+                   MaxWidth="720"
+                   TextAlignment="Center" />
+    </Border>
+</UserControl>

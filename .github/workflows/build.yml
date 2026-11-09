@@ -1,0 +1,165 @@
+# 班级积分系统 · 持续集成
+#
+# 两条线并行，谁红了就是谁的问题：
+#   windows  —— 客户端（WinUI 3）能编译、单测全过、发布包能产出来
+#   worker   —— 同步中枢能类型检查、D1 迁移能落库、接口契约冒烟全过
+#
+# 刻意不做的事：
+#   - 不在这里自动部署到 Cloudflare。教室里的部署应该是"人按一下"的动作，
+#     而且要把 CLOUDFLARE_API_TOKEN 这类长期凭据放进仓库变量里，风险大于收益。
+#     真需要的话按 README「二、部署同步中枢」手动跑几条命令即可。
+#   - 不缓存 obj/。WinUI 的 XAML 编译缓存跨机器复用会出怪问题，宁可慢十几秒。
+
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# 同一分支连续 push 时，取消上一轮还没跑完的，别浪费额度
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  windows:
+    name: 客户端 · 编译 + 单测 + 发布
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: 取源码
+        uses: actions/checkout@v4
+
+      - name: 装 .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: 打印环境（出问题时先看这一行）
+        run: |
+          dotnet --info
+          Write-Host "runner=$env:RUNNER_IMAGE_OS"
+
+      # WinUI 3 必须显式给 Platform，否则 XAML 编译器会报"找不到 WindowsAppSDK 的 target"。
+      # 不用 Visual Studio 也能编 —— 这个工程从第一天就是按"只有 dotnet CLI"设计的。
+      - name: 编译应用（x64 / Release）
+        run: dotnet build src/ClassPoints.App/ClassPoints.App.csproj -c Release -p:Platform=x64
+
+      # 纯逻辑 + 配置包 + Excel 往返 + 事件计数单测。不引 xunit，一条 dotnet run 就跑完，CI 里反而更省事。
+      - name: 单元测试（Core + Data + 配置包 + Excel）
+        run: dotnet run --project tools/tests -c Release
+
+      - name: 发布成可整目录拷走的文件夹
+        run: pwsh scripts/publish.ps1 -Runtime win-x64 -Configuration Release
+
+      - name: 上传发布包
+        uses: actions/upload-artifact@v4
+        with:
+          name: ClassPoints-win-x64
+          path: dist/ClassPoints-win-x64/
+          if-no-files-found: error
+          retention-days: 14
+
+      # 可选步骤：GitHub 的 artifact 要登录才能下、14 天就过期、国内还经常连不上。
+      # 配了 CNB 的话，同一份 zip 往那边的「版本」里也挂一份，链接固定不过期。
+      # 需要两个仓库配置：variable CNB_REPO（形如 alice/classpoints）+ secret CNB_TOKEN。
+      # 没配就跳过，不让整条 CI 变红 —— 这个仓库默认没有这些配置。
+      - name: 传到 CNB 版本库（可选）
+        if: github.ref == 'refs/heads/main'
+        shell: bash
+        env:
+          CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+          CNB_REPO: ${{ vars.CNB_REPO }}
+        run: |
+          if [ -z "${CNB_TOKEN:-}" ] || [ -z "${CNB_REPO:-}" ]; then
+            echo "::notice::没有配置 CNB_REPO / CNB_TOKEN，跳过上传（发布包仍可从 Artifacts 下载）"
+            exit 0
+          fi
+
+          export CNB_TAG=latest-build
+          export CNB_NAME="班级积分 · 最新构建"
+          export CNB_BODY="$(printf '由 GitHub Actions 构建 #%s 自动发布。\n\n- 提交：%s\n- 时间：%s\n- 内容：Windows x64 自包含发布包，解压后双击「启动.cmd」，首次启动选形态\n' \
+            "$GITHUB_RUN_NUMBER" "$GITHUB_SHA" "$(date -u +'%Y-%m-%d %H:%M UTC')")"
+
+          bash scripts/upload-cnb-release.sh dist/ClassPoints-win-x64.zip
+
+      # CNB 的仓库容量有限，而版本库是最容易被悄悄吃满的地方：
+      # 每个版本挂着一个几十 MB 的 zip，攒上十来个就是 1 GB。
+      # 每次构建后清一遍，只留「大版本」（v1.2 这种）和固定的 latest-build。
+      # 清理失败不该让构建变红 —— 附件已经传好了，能下载才是重点。
+      - name: 清理 CNB 旧版本（可选）
+        if: github.ref == 'refs/heads/main'
+        continue-on-error: true
+        shell: bash
+        env:
+          CNB_TOKEN: ${{ secrets.CNB_TOKEN }}
+          CNB_REPO: ${{ vars.CNB_REPO }}
+          CNB_KEEP_MAJOR: '3'
+        run: |
+          if [ -z "${CNB_TOKEN:-}" ] || [ -z "${CNB_REPO:-}" ]; then
+            echo "::notice::没有配置 CNB_REPO / CNB_TOKEN，跳过清理"
+            exit 0
+          fi
+          bash scripts/prune-cnb-releases.sh
+
+  worker:
+    name: 同步中枢 · 类型检查 + 迁移 + 契约冒烟
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - name: 取源码
+        uses: actions/checkout@v4
+
+      - name: 装 Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: 装依赖（走 lock 文件，版本可复现）
+        run: npm ci
+
+      - name: 类型检查
+        run: npm run typecheck
+
+      # 迁移能干净地跑完，就等于证明了 0001_init.sql 没有语法/约束冲突。
+      # 这一步在真实 D1 上也是同一条命令，只是多一个 --remote。
+      - name: 建本地 D1 并应用迁移
+        run: npx wrangler d1 migrations apply classpoints --local
+
+      - name: 起本地 Worker
+        run: |
+          npx wrangler dev --port 8787 --ip 127.0.0.1 --local > /tmp/wrangler.log 2>&1 &
+          echo "WDEV=$!" >> "$GITHUB_ENV"
+          for i in $(seq 1 90); do
+            code=$(curl -s -m 2 -o /dev/null -w '%{http_code}' http://127.0.0.1:8787/api/v1/ping || true)
+            if [ "$code" = "401" ]; then echo "Worker 已就绪（第 ${i} 秒）"; exit 0; fi
+            sleep 1
+          done
+          echo "Worker 90 秒内没起来，日志："
+          cat /tmp/wrangler.log
+          exit 1
+
+      - name: 接口契约冒烟（58 项，含多班隔离）
+        run: timeout 240 npm run test:smoke
+
+      - name: 失败时把 Worker 日志带上来
+        if: failure()
+        run: cat /tmp/wrangler.log || true
+
+      # 常驻进程要显式收掉：GitHub 的 runner 会等所有子进程结束才判定 job 完成，
+      # 漏了这一步，job 会一直挂到 timeout-minutes 才报失败。
+      - name: 收掉本地 Worker
+        if: always()
+        run: |
+          # $WDEV 是 npx 的 PID，真正的 worker 是它下面的 node 子进程，
+          # 所以先按 PID 收，再按命令行兜底。两条都失败也无所谓，反正 job 要结束了。
+          kill -TERM "$WDEV" 2>/dev/null || true
+          pkill -TERM -f "wrangler dev" 2>/dev/null || true
+          pkill -TERM -f "workerd" 2>/dev/null || true
+          sleep 1
+          echo "收尾完成"

@@ -1,0 +1,37 @@
+# 班级积分系统 · 同步中枢
+# 这一层只做四件事：鉴权、校验、幂等写入、增量查询。
+# 不排名、不折算、不做业务计算 —— 所有计算留在客户端。
+#
+# 部署步骤见仓库根目录 README「二、部署同步中枢」。这份文件里有两处必须自己改：
+#   1. database_id —— 跑 `npx wrangler d1 create classpoints` 之后把打印出来的 id 填进来
+#   2. [[routes]]   —— 想绑自有域名时取消注释（不绑也能用，走 *.workers.dev）
+
+name = "classpoints-api"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+
+# 一定要挂自有域名，不能只靠 *.workers.dev。
+# 学校网络（国内）连 workers.dev 是被拦的，教室那台机器上会表现成"同步一直失败"，
+# 而开发机上因为有代理完全看不出来。挂上自己的域名才真的能用 —— 写法如下：
+#
+# [[routes]]
+# pattern = "classpoints.你的域名.com"
+# custom_domain = true
+#
+# custom_domain = true 会自动建 DNS 记录并签证书，前提是这个域名的 DNS 已经托管在
+# 同一个 Cloudflare 账号下；否则 wrangler 找不到 zone，deploy 会失败。
+
+[[d1_databases]]
+binding = "DB"
+database_name = "classpoints"
+# 占位符：换成自己的。不改的话 `--local` 开发能跑，`--remote` 会报找不到库。
+database_id = "00000000-0000-0000-0000-000000000000"
+
+[vars]
+TOKEN_TTL_HOURS = "12"
+REFRESH_TTL_DAYS = "90"
+# 免费的 Workers 允许 PBKDF2 到 100000 轮，正好够用
+PBKDF2_ITERATIONS = "100000"
+
+[observability]
+enabled = true

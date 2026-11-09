@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ClassPoints.App.Desk.DeskPrintPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="340" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <!-- ===== 左：选版式 ===== -->
+        <Border Grid.Column="0" Background="{ThemeResource CardBgBrush}"
+                BorderBrush="{ThemeResource CardStrokeBrush}" BorderThickness="0,0,1,0">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="20,18,20,24">
+                <StackPanel Spacing="14">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="打印" Style="{StaticResource DeskH1Text}" />
+                        <TextBlock Text="右边就是打印结果，所见即所印。" Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6" x:Name="SheetList">
+                        <RadioButton x:Name="SheetRanking" GroupName="sheet" Content="班级排名表（贴后墙）"
+                                     IsChecked="True" Checked="OnSheetChanged" />
+                        <RadioButton x:Name="SheetFinal" GroupName="sheet" Content="期末总评表（评优/存档）"
+                                     Checked="OnSheetChanged" />
+                        <RadioButton x:Name="SheetPersonal" GroupName="sheet" Content="个人成绩单（家长会）"
+                                     Checked="OnSheetChanged" />
+                        <RadioButton x:Name="SheetRecovery" GroupName="sheet" Content="恢复卡（名片大小）"
+                                     Checked="OnSheetChanged" />
+                        <RadioButton x:Name="SheetArchive" GroupName="sheet" Content="周期归档封面"
+                                     Checked="OnSheetChanged" />
+                    </StackPanel>
+
+                    <Border Height="1" Background="{ThemeResource CardStrokeBrush}" />
+
+                    <!-- 排名表选项 -->
+                    <StackPanel x:Name="RankOptions" Spacing="8">
+                        <CheckBox x:Name="IncludeTotalCheck" Content="包含「总评」列"
+                                  Checked="OnOptionChanged" Unchecked="OnOptionChanged" />
+                        <TextBlock Text="默认不印总评。贴墙上的榜只印积分。"
+                                   Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+
+                    <!-- 个人成绩单选项 -->
+                    <StackPanel x:Name="PersonalOptions" Spacing="8" Visibility="Collapsed">
+                        <TextBlock Text="打谁" Style="{StaticResource DeskColumnHeader}" />
+                        <ComboBox x:Name="StudentCombo" HorizontalAlignment="Stretch"
+                                  SelectionChanged="OnOptionChanged" />
+                        <TextBlock Text="「逐个打印」一人一页，不会把一个人劈开。"
+                                   Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+
+                    <!-- 恢复卡说明 -->
+                    <StackPanel x:Name="RecoveryOptions" Spacing="8" Visibility="Collapsed">
+                        <TextBlock x:Name="RecoveryHint" Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+
+                    <!-- 归档封面说明 -->
+                    <StackPanel x:Name="ArchiveOptions" Spacing="8" Visibility="Collapsed">
+                        <TextBlock x:Name="ArchiveHint" Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+
+                    <Border Height="1" Background="{ThemeResource CardStrokeBrush}" />
+
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="打印机" Style="{StaticResource DeskColumnHeader}" />
+                        <ComboBox x:Name="PrinterCombo" HorizontalAlignment="Stretch" />
+                        <Button Content="打印（无页眉页脚）" Style="{StaticResource DeskPrimaryButton}"
+                                HorizontalAlignment="Stretch" Click="OnPrint" />
+                        <Button Content="另存为 HTML" Style="{StaticResource DeskButton}"
+                                HorizontalAlignment="Stretch" Click="OnSaveHtml" />
+                        <TextBlock x:Name="StatusText" Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <!-- ===== 右：预览（就是浏览器） ===== -->
+        <Grid Grid.Column="1" Background="{ThemeResource TileBgBrush}">
+            <WebView2 x:Name="Preview" DefaultBackgroundColor="Transparent" />
+
+            <StackPanel x:Name="PreviewHint" VerticalAlignment="Center" HorizontalAlignment="Center"
+                        Spacing="8">
+                <ProgressRing IsActive="True" Width="28" Height="28"
+                              Foreground="{ThemeResource SelectStrokeBrush}" />
+                <TextBlock Text="正在生成预览…" Style="{StaticResource DeskSecondaryText}" />
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>

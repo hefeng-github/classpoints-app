@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <RootNamespace>ClassPoints.App</RootNamespace>
+    <AssemblyName>ClassPoints</AssemblyName>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <Platforms>x64;ARM64</Platforms>
+    <RuntimeIdentifiers>win-x64;win-arm64</RuntimeIdentifiers>
+    <UseWinUI>true</UseWinUI>
+    <WindowsPackageType>None</WindowsPackageType>
+    <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <!-- 必须为 true，哪怕我们不做 MSIX 打包（WindowsPackageType=None）。
+         BuildTools.MSIX 的公共 targets 由这个开关引入，而「把 ClassPoints.pri 和各个 .xbf
+         加进发布清单」的 AddProjectPriToResolvedFileToPublish 就在里面。
+         设成 false 时 dotnet publish 出来的目录一个 .xbf 都没有，运行时
+         MainWindow.InitializeComponent 直接抛 XamlParseException。 -->
+    <EnableMsixTooling>true</EnableMsixTooling>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    <DefaultLanguage>zh-CN</DefaultLanguage>
+    <!-- 发布目录默认会带几十个语言资源文件夹（af-ZA / ar-SA …），教室电脑上用不着。
+         用这个属性在编译期就只生成中文和英文，比发布完再删干净：不产生垃圾，也不用删。 -->
+    <SatelliteResourceLanguages>zh-CN;zh-Hans;en;en-US</SatelliteResourceLanguages>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="2.6.5" />
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.6584" />
+    <PackageReference Include="CommunityToolkit.WinUI.Controls.SettingsControls" Version="8.2.250402" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ClassPoints.Core\ClassPoints.Core.csproj" />
+    <ProjectReference Include="..\ClassPoints.Data\ClassPoints.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!-- 发布目录里不要 .pdb。
+       我们自己那三个只有几百 KB，但 NPOI 2.8 带来的 libSkiaSharp.pdb 有 84 MB ——
+       纯调试符号，运行时一个字都用不到，白白让 U 盘里多八十兆。
+       DebugType=None 管不到 NuGet 包里自带的原生符号，所以在发布清单这一步直接剔掉。 -->
+  <Target Name="DropPdbsFromPublish" AfterTargets="ComputeResolvedFilesToPublishList">
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)" Condition="'%(Extension)' == '.pdb'" />
+    </ItemGroup>
+  </Target>
+
+</Project>

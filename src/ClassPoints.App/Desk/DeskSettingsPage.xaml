@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ClassPoints.App.Desk.DeskSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,20,24,28">
+        <StackPanel Spacing="16" MaxWidth="1080" HorizontalAlignment="Stretch">
+            <StackPanel Spacing="4">
+                <TextBlock Text="设置" Style="{StaticResource DeskH1Text}" />
+                <TextBlock x:Name="SubText" Style="{StaticResource DeskSecondaryText}" />
+            </StackPanel>
+
+            <StackPanel x:Name="Sections" Spacing="14" />
+        </StackPanel>
+    </ScrollViewer>
+</Page>

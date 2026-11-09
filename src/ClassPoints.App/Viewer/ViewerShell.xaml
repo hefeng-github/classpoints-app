@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<UserControl
+    x:Class="ClassPoints.App.Viewer.ViewerShell"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ClassPoints.App.Controls">
+
+    <!--
+        只读查询端：放在办公室、走廊或图书角，学生自己来查。
+        形态上有意和另外两端都不一样 —— 没有左侧导航（那是"工作台"的形状），
+        顶部一条状态 + 三个大页签，像一台查询机，而不是一台电脑。
+    -->
+    <Grid Background="{ThemeResource BoardBgBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="60" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- ===== 状态条 ===== -->
+        <Border Grid.Row="0" Background="{ThemeResource CardBgBrush}"
+                BorderBrush="{ThemeResource CardStrokeBrush}" BorderThickness="0,0,0,1">
+            <Grid Padding="20,0">
+                <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                    <TextBlock x:Name="ClassText" Style="{StaticResource DeskH1Text}" FontSize="20" />
+                    <Border Background="{ThemeResource PositiveBgBrush}" CornerRadius="10" Padding="10,2"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="只读" FontSize="12" Foreground="{ThemeResource PositiveBrush}" />
+                    </Border>
+                    <TextBlock x:Name="PeriodText" Style="{StaticResource DeskSecondaryText}"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <TextBlock x:Name="SyncText" Style="{StaticResource DeskSecondaryText}"
+                               VerticalAlignment="Center" />
+                    <Button Content="数据源" Style="{StaticResource DeskButton}" Click="OnDataSource" />
+                    <TextBlock x:Name="ClockText" FontFamily="{StaticResource NumberFont}" FontSize="19"
+                               FontWeight="SemiBold" Foreground="{ThemeResource TextPrimaryBrush}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- ===== 页签 ===== -->
+        <Border Grid.Row="1" Padding="16,8">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <Button x:Name="TabLookup" Tag="0" Click="OnTabClick" Content="查询"
+                        Style="{StaticResource ViewerTabButton}" />
+                <Button x:Name="TabRank" Tag="1" Click="OnTabClick" Content="排名"
+                        Style="{StaticResource ViewerTabButton}" />
+                <Button x:Name="TabCounters" Tag="2" Click="OnTabClick" Content="事件"
+                        Style="{StaticResource ViewerTabButton}" />
+            </StackPanel>
+        </Border>
+
+        <Frame x:Name="ContentFrame" Grid.Row="2" />
+
+        <controls:Toast x:Name="ToastLayer" Grid.RowSpan="3" />
+    </Grid>
+</UserControl>

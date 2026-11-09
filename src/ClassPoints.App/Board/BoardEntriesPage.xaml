@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ClassPoints.App.Board.BoardEntriesPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="using:ClassPoints.App.Controls"
+    Background="{ThemeResource BoardBgBrush}">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="56" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Padding="12,0">
+            <StackPanel Orientation="Horizontal" Spacing="14" VerticalAlignment="Center">
+                <TextBlock Text="今天的记录" Style="{StaticResource H2Text}" />
+                <TextBlock x:Name="CountText" Style="{StaticResource SecondaryText}" VerticalAlignment="Center" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" VerticalAlignment="Center">
+                <Button Content="刷新" Style="{StaticResource TouchSecondaryButton}" Height="40" MinWidth="90"
+                        Click="OnRefreshClick" />
+            </StackPanel>
+        </Grid>
+
+        <Grid Grid.Row="1" Padding="12,0,12,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="120" />
+                <ColumnDefinition Width="210" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition x:Name="OperatorColumn" Width="0" />
+                <ColumnDefinition Width="110" />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="时间" Style="{StaticResource SmallText}" />
+            <TextBlock Grid.Column="1" Text="学生" Style="{StaticResource SmallText}" />
+            <TextBlock Grid.Column="2" Text="项目 / 备注" Style="{StaticResource SmallText}" />
+            <TextBlock x:Name="OperatorHeader" Grid.Column="3" Text="操作人"
+                       Style="{StaticResource SmallText}" Visibility="Collapsed" />
+            <TextBlock Grid.Column="4" Text="分值" Style="{StaticResource SmallText}" HorizontalAlignment="Right" />
+        </Grid>
+
+        <Grid Grid.Row="2" Margin="12,0">
+            <ListView x:Name="EntryList" SelectionMode="None"
+                      Background="Transparent" BorderThickness="0"
+                      IsItemClickEnabled="False">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        <Setter Property="Padding" Value="0" />
+                        <Setter Property="MinHeight" Value="0" />
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
+
+            <controls:EmptyState x:Name="Empty" />
+        </Grid>
+
+        <TextBlock Grid.Row="3" Margin="12,8,12,12" Style="{StaticResource SmallText}"
+                   Text="左滑可撤销。大屏只显示今天，完整流水在电脑端。" />
+    </Grid>
+</Page>

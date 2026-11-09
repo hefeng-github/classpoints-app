@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Page
+    x:Class="ClassPoints.App.Desk.DeskExamsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="24,20,24,28">
+        <StackPanel Spacing="16">
+
+            <Grid>
+                <StackPanel Spacing="4">
+                    <TextBlock Text="成绩与总评" Style="{StaticResource DeskH1Text}" />
+                    <TextBlock x:Name="FormulaText" Style="{StaticResource DeskSecondaryText}" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                    <Button Content="导出前检查" Style="{StaticResource DeskButton}" Click="OnPreflight" />
+                    <Button x:Name="ExportButton" Content="导出 Excel" Style="{StaticResource DeskPrimaryButton}"
+                            Click="OnExport" />
+                </StackPanel>
+            </Grid>
+
+            <!-- ===== 一、考试列表 ===== -->
+            <Border Style="{StaticResource DeskCardBorder}" Padding="0">
+                <StackPanel>
+                    <Grid Padding="18,14,18,12">
+                        <TextBlock Text="考试" Style="{StaticResource DeskH2Text}" />
+                        <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                            <Button Content="选择文件导入成绩" Style="{StaticResource DeskButton}"
+                                    Click="OnImportScores" />
+                        </StackPanel>
+                    </Grid>
+
+                    <Grid Padding="18,0,18,8" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="80" />
+                            <ColumnDefinition Width="140" />
+                            <ColumnDefinition Width="140" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="日期" Style="{StaticResource DeskColumnHeader}" />
+                        <TextBlock Grid.Column="1" Text="名称" Style="{StaticResource DeskColumnHeader}" />
+                        <TextBlock Grid.Column="2" Text="满分" Style="{StaticResource DeskColumnHeader}"
+                                   HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="3" Text="参考" Style="{StaticResource DeskColumnHeader}"
+                                   HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="4" Text="缺考" Style="{StaticResource DeskColumnHeader}"
+                                   HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="5" Text="导入时间" Style="{StaticResource DeskColumnHeader}" />
+                        <TextBlock Grid.Column="6" Text="操作" Style="{StaticResource DeskColumnHeader}" />
+                    </Grid>
+
+                    <StackPanel x:Name="ExamList" />
+                </StackPanel>
+            </Border>
+
+            <!-- ===== 二、两层权重 ===== -->
+            <Border Style="{StaticResource DeskCardBorder}">
+                <StackPanel Spacing="14">
+                    <StackPanel Spacing="2">
+                        <TextBlock Text="权重" Style="{StaticResource DeskH2Text}" />
+                        <TextBlock Text="名次看下面那行「实际影响」。"
+                                   Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+
+                    <Grid ColumnSpacing="18">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <StackPanel Grid.Column="0" Spacing="4">
+                            <TextBlock x:Name="ExamWeightLabel" Style="{StaticResource DeskBodyText}" />
+                            <Slider x:Name="ExamWeightSlider" Minimum="0" Maximum="100" StepFrequency="5"
+                                    ValueChanged="OnWeightSliderChanged" />
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Spacing="4">
+                            <TextBlock x:Name="DailyWeightLabel" Style="{StaticResource DeskBodyText}" />
+                            <Slider x:Name="DailyWeightSlider" Minimum="0" Maximum="100" StepFrequency="5"
+                                    ValueChanged="OnWeightSliderChanged" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock x:Name="ImpactText" Style="{StaticResource DeskSecondaryText}" />
+
+                    <StackPanel Spacing="8">
+                        <TextBlock Text="各场考试权重" Style="{StaticResource DeskColumnHeader}" />
+                        <StackPanel x:Name="WeightList" Spacing="6" />
+                        <Grid>
+                            <TextBlock x:Name="WeightSumText" Style="{StaticResource DeskBodyText}" />
+                            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+                                <Button Content="自动配平" Style="{StaticResource DeskButton}" Click="OnAutoBalance" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== 三、口径 ===== -->
+            <Border Style="{StaticResource DeskCardBorder}">
+                <StackPanel Spacing="12">
+                    <TextBlock Text="口径" Style="{StaticResource DeskH2Text}" />
+                    <CheckBox x:Name="NormalizeCheck" Content="把总评折算成百分制（默认关闭）"
+                              Checked="OnNormalizeChanged" Unchecked="OnNormalizeChanged" />
+                    <TextBlock Text="打开后名次会变：满分不同的考试被拉平，可能和墙上的榜对不上。"
+                               Style="{StaticResource DeskSecondaryText}" />
+
+                    <StackPanel Orientation="Horizontal" Spacing="12">
+                        <ComboBox x:Name="PolicyCombo" Header="缺考怎么算" Width="440"
+                                  SelectionChanged="OnPolicyChanged" />
+                        <TextBlock Style="{StaticResource DeskSecondaryText}" VerticalAlignment="Bottom"
+                                   Text="缺考不记 0 分：考得差和没考是两件事。"
+                                   MaxWidth="460" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+            <!-- ===== 四、排名预览 ===== -->
+            <Border Style="{StaticResource DeskCardBorder}" Padding="0">
+                <StackPanel>
+                    <Grid Padding="18,14,18,12">
+                        <TextBlock Text="排名预览" Style="{StaticResource DeskH2Text}" />
+                        <TextBlock x:Name="ChangeText" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                   Style="{StaticResource DeskSecondaryText}" />
+                    </Grid>
+
+                    <Grid Padding="18,0,18,8" ColumnSpacing="12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="60" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="100" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="110" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="名次" Style="{StaticResource DeskColumnHeader}" />
+                        <TextBlock Grid.Column="1" Text="姓名" Style="{StaticResource DeskColumnHeader}" />
+                        <TextBlock Grid.Column="2" Text="平时分" Style="{StaticResource DeskColumnHeader}"
+                                   HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="3" Text="考试总分" Style="{StaticResource DeskColumnHeader}"
+                                   HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="4" Text="考试百分制" Style="{StaticResource DeskColumnHeader}"
+                                   HorizontalAlignment="Right" />
+                        <TextBlock Grid.Column="5" Text="总评" Style="{StaticResource DeskColumnHeader}"
+                                   HorizontalAlignment="Right" />
+                    </Grid>
+
+                    <StackPanel x:Name="RankList" />
+                    <StackPanel x:Name="RankEmpty" Padding="18,20" Visibility="Collapsed">
+                        <TextBlock Text="还没有考试。导入成绩后这里出加权排名。"
+                                   Style="{StaticResource DeskSecondaryText}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+</Page>
